@@ -6,6 +6,9 @@ on:
       - ".github/workflows/build-apk.yml"
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -25,15 +28,19 @@ jobs:
         with:
           gradle-version: "8.9"
 
-      - name: Configurar Android
+      - name: Configurar Android SDK
         uses: android-actions/setup-android@v3
 
       - name: Instalar Android SDK
-        run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
+        run: |
+          yes | sdkmanager --licenses >/dev/null || true
+          sdkmanager "platforms;android-35" "build-tools;35.0.0"
 
-      - name: Crear aplicación
+      - name: Crear proyecto Android
+        shell: bash
         run: |
           mkdir -p android-app/app/src/main/java/cl/coloramica/behr
+          mkdir -p android-app/app/src/main/res/drawable
 
           cat > android-app/settings.gradle <<'EOF'
           pluginManagement {
@@ -43,6 +50,15 @@ jobs:
                   gradlePluginPortal()
               }
           }
+
+          dependencyResolutionManagement {
+              repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+              repositories {
+                  google()
+                  mavenCentral()
+              }
+          }
+
           rootProject.name = "ColoramicaBEHR"
           include(":app")
           EOF
@@ -67,7 +83,7 @@ jobs:
                   minSdk 23
                   targetSdk 35
                   versionCode 1
-                  versionName "1.0"
+                  versionName "1.0-test"
               }
           }
           EOF
@@ -76,6 +92,8 @@ jobs:
           <?xml version="1.0" encoding="utf-8"?>
           <manifest xmlns:android="http://schemas.android.com/apk/res/android">
               <application
+                  android:allowBackup="true"
+                  android:icon="@drawable/icon"
                   android:label="Coloramica + BEHR"
                   android:theme="@android:style/Theme.Material.Light.NoActionBar">
                   <activity
@@ -90,4 +108,80 @@ jobs:
           </manifest>
           EOF
 
-          cat > android-app/app/src/main/java/cl/coloramica/behr/MainActivity
+          cat > android-app/app/src/main/java/cl/coloramica/behr/MainActivity.java <<'EOF'
+          package cl.coloramica.behr;
+
+          import android.app.Activity;
+          import android.content.ActivityNotFoundException;
+          import android.content.Intent;
+          import android.net.Uri;
+          import android.os.Bundle;
+          import android.widget.Toast;
+
+          public class MainActivity extends Activity {
+              private static final String APP_URL =
+                  "https://sebastianandresreyes22-blip.github.io/coloramica-behr-app/";
+
+              @Override
+              protected void onCreate(Bundle savedInstanceState) {
+                  super.onCreate(savedInstanceState);
+
+                  Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(APP_URL));
+                  intent.addCategory(Intent.CATEGORY_BROWSABLE);
+
+                  try {
+                      startActivity(intent);
+                  } catch (ActivityNotFoundException ex) {
+                      Toast.makeText(
+                          this,
+                          "No se encontró un navegador para abrir Coloramica + BEHR.",
+                          Toast.LENGTH_LONG
+                      ).show();
+                  }
+
+                  finish();
+              }
+          }
+          EOF
+
+          if [ -f icon-512.png ]; then
+            cp icon-512.png android-app/app/src/main/res/drawable/icon.png
+          elif [ -f icon-192.png ]; then
+            cp icon-192.png android-app/app/src/main/res/drawable/icon.png
+          else
+            python3 - <<'PY'
+          from PIL import Image, ImageDraw
+          img = Image.new("RGBA", (512,512), (22, 92, 63, 255))
+          d = ImageDraw.Draw(img)
+          d.rounded_rectangle((40,40,472,472), radius=90, fill=(22,92,63,255))
+          d.text((130,220), "C+B", fill="white")
+          img.save("android-app/app/src/main/res/drawable/icon.png")
+          PY
+          fi
+
+      - name: Compilar APK
+        working-directory: android-app
+        run: gradle --no-daemon :app:assembleDebug
+
+      - name: Preparar APK
+        run: |
+          cp android-app/app/build/outputs/apk/debug/app-debug.apk Coloramica-BEHR.apk
+
+      - name: Subir APK como artefacto
+        uses: actions/upload-artifact@v4
+        with:
+          name: Coloramica-BEHR-APK
+          path: Coloramica-BEHR.apk
+
+      - name: Publicar APK en Releases
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="android-test-v1"
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" Coloramica-BEHR.apk --clobber
+          else
+            gh release create "$TAG" Coloramica-BEHR.apk \
+              --title "Coloramica + BEHR Android — versión de prueba" \
+              --notes "APK de prueba instalable. Abre la aplicación web segura de Coloramica + BEHR en el navegador del teléfono para conservar el inicio de sesión con Google y la conexión protegida con Supabase."
+          fi
