@@ -1,0 +1,23 @@
+COLORAMICA + BEHR — PWA SEGURA PARA PUBLICACIÓN
+
+Esta versión NO incorpora la base de ubicaciones de chips dentro del HTML público.
+Las ubicaciones se cargan desde Supabase únicamente después de iniciar sesión con una Cuenta de Google autorizada.
+
+Archivos de publicación:
+- index.html
+- config.js
+- manifest.webmanifest
+- service-worker.js
+- icon-192.png
+- icon-512.png
+
+IMPORTANTE
+- La URL y la clave publishable de Supabase en config.js son datos públicos de cliente por diseño.
+- Nunca publiques la contraseña de la base de datos, la Service Role Key, sb_secret_... ni el Client Secret de Google.
+- Google OAuth y RLS deben permanecer habilitados.
+
+CRÉDITOS
+- Desarrollo y administración: Sebastián Reyes Espina
+- Idea original: Sandro Díaz González
+- © 2026 Sebastián Reyes Espina. Todos los derechos reservados.
+- BEHR® y Easy® son marcas de sus respectivos propietarios.

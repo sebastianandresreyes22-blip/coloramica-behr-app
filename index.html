@@ -1,0 +1,401 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#17324d">
+<title>Coloramica + BEHR</title>
+<style>
+:root{--bg:#f4f7f9;--card:#fff;--ink:#17212b;--muted:#657587;--navy:#163a59;--navy2:#215d8a;--line:#dce4eb;--soft:#eef4f8;--ok:#157347;--warn:#946200;--bad:#b42318;--shadow:0 8px 24px rgba(20,45,70,.08)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+.app{max-width:900px;margin:auto;min-height:100vh;padding:14px 12px 44px}
+.hero{background:linear-gradient(135deg,var(--navy),var(--navy2));color:white;border-radius:22px;padding:20px 18px;box-shadow:0 12px 30px rgba(18,54,82,.18)}
+.hero-row{display:flex;align-items:center;gap:12px}.logo{width:50px;height:50px;border-radius:15px;background:white;color:var(--navy);display:grid;place-items:center;font-size:26px}
+h1{font-size:23px;margin:0}.hero p{margin:4px 0 0;color:#d9e8f3;font-size:13px}
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}
+.tab{height:48px;border:1px solid var(--line);border-radius:14px;background:white;color:var(--navy);font-weight:900;font-size:14px;cursor:pointer}
+.tab.active{background:var(--navy);color:white;border-color:var(--navy)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:15px;box-shadow:var(--shadow)}
+label{display:block;font-weight:800;margin-bottom:7px}.searchrow{display:flex;gap:8px}
+input,select{width:100%;border:2px solid #ced9e3;border-radius:13px;padding:13px 14px;font-size:16px;outline:none;background:white}
+input:focus,select:focus{border-color:var(--navy2);box-shadow:0 0 0 3px rgba(33,93,138,.11)}
+button{font-family:inherit}.btn{border:0;border-radius:13px;padding:0 16px;font-weight:850;cursor:pointer}.primary{background:var(--navy);color:white;min-height:48px}.secondary{background:var(--soft);color:var(--navy);min-height:40px}
+.helper{font-size:12px;color:var(--muted);margin-top:8px}.section{margin-top:14px}.title{font-weight:900;font-size:14px;color:#435568;margin:0 0 8px}
+.empty{background:white;border:1px dashed #cbd6df;border-radius:17px;padding:22px;text-align:center;color:var(--muted)}
+.result{background:white;border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:var(--shadow)}
+.result-head{display:flex;justify-content:space-between;align-items:start;gap:10px}.bigcode{font-size:27px;font-weight:950;color:var(--navy)}
+.badge{font-size:11px;font-weight:900;border-radius:999px;padding:6px 9px}.ok{background:#e8f5ee;color:var(--ok)}.warn{background:#fff3d6;color:var(--warn)}
+.loc{margin-top:10px;padding:12px;border-radius:13px;border:1px solid var(--line);background:#fbfcfd}.loc strong{display:block;font-size:17px}.loc small{color:var(--muted)}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.notice{margin-top:11px;background:#fff6df;border:1px solid #ead89f;color:#715100;border-radius:13px;padding:11px;font-size:13px}
+.history{display:flex;gap:7px;overflow:auto}.chip{flex:none;border:1px solid var(--line);background:white;border-radius:999px;padding:8px 10px;font-weight:750;cursor:pointer}
+.grid-scroll{overflow:auto;margin-top:10px}.grid{display:grid;grid-template-columns:27px repeat(24,17px);grid-template-rows:23px repeat(16,17px);gap:2px;width:max-content;font-size:8px}.gl{display:grid;place-items:center;color:#72808c;font-weight:700}.cell{border-radius:3px;background:#e9eef3;border:1px solid #dce3e9}.cell.hit{background:var(--navy);border-color:var(--navy);box-shadow:0 0 0 2px #bed1e0}.cell.hit:after{content:"";display:block;width:5px;height:5px;border-radius:50%;background:white;margin:5px auto}
+.filters{display:grid;grid-template-columns:1.5fr 1fr;gap:8px}.catalog-meta{display:flex;justify-content:space-between;gap:10px;align-items:center;margin:12px 1px 8px;color:var(--muted);font-size:12px}
+.product-list{display:grid;gap:11px}.product{background:white;border:1px solid var(--line);border-radius:17px;padding:14px;box-shadow:0 5px 16px rgba(20,45,70,.05)}
+.product-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.pname{font-weight:950;color:var(--navy);font-size:17px;line-height:1.22}.cat{font-size:10px;font-weight:900;background:var(--soft);color:var(--navy);padding:5px 8px;border-radius:999px;white-space:nowrap}
+.codes{font-size:12px;color:var(--muted);margin-top:5px}.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:11px}.fact{border:1px solid var(--line);border-radius:11px;padding:8px;background:#fbfcfd}.fact b{display:block;font-size:11px;color:#536579;margin-bottom:3px}.fact span{font-size:13px;font-weight:750}
+.details{margin-top:9px;font-size:13px;color:#3f4e5b;line-height:1.45}.details b{color:#263746}
+.linkrow{display:flex;gap:7px;flex-wrap:wrap;margin-top:11px}.link{display:inline-flex;text-decoration:none;align-items:center;justify-content:center;border-radius:11px;padding:9px 10px;background:var(--navy);color:white;font-size:12px;font-weight:850}.link.alt{background:var(--soft);color:var(--navy)}
+.disclaimer{background:#f0f5f9;border:1px solid #d7e3ec;border-radius:14px;padding:12px;font-size:12px;color:#536579;line-height:1.45;margin-top:12px}
+.hidden{display:none!important}.footer{text-align:center;color:#81909c;font-size:11px;margin-top:24px}
+@media(max-width:600px){.app{padding:10px 9px 36px}.hero{border-radius:18px;padding:17px 14px}.searchrow{flex-direction:column}.filters{grid-template-columns:1fr}.facts{grid-template-columns:1fr 1fr}.product-top{flex-direction:column}.cat{align-self:flex-start}}
+
+.auth-screen{min-height:100vh;display:grid;place-items:center;padding:22px;background:linear-gradient(145deg,#eef4f8,#f8fafc)}
+.auth-box{width:min(430px,100%);background:white;border:1px solid var(--line);border-radius:22px;padding:22px;box-shadow:0 18px 45px rgba(22,58,89,.14);text-align:center}
+.auth-logo{width:68px;height:68px;border-radius:20px;margin:0 auto 14px;background:var(--navy);color:white;display:grid;place-items:center;font-size:34px}
+.auth-box h2{margin:0 0 6px;color:var(--navy)}.auth-box p{color:var(--muted);font-size:13px;line-height:1.5}
+.google-btn{width:100%;min-height:50px;border:0;border-radius:13px;background:var(--navy);color:white;font-weight:900;font-size:15px;cursor:pointer;margin-top:8px}
+.auth-msg{margin-top:12px;border-radius:12px;padding:10px;font-size:12px;line-height:1.45;background:#f4f7f9;color:#506273}
+.auth-msg.error{background:#fff0ee;color:#9d251d;border:1px solid #f0cbc6}
+.sessionbar{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:12px;padding-top:11px;border-top:1px solid rgba(255,255,255,.25);font-size:12px;color:#e5eff6}
+.sessionbar .who{min-width:0}.sessionbar .who b{display:block;color:white;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:560px}
+.logout-btn{flex:none;border:1px solid rgba(255,255,255,.45);background:transparent;color:white;border-radius:10px;padding:8px 10px;font-weight:800;cursor:pointer}
+.admin-grid{display:grid;grid-template-columns:2fr 1fr auto;gap:8px}.user-list{display:grid;gap:8px;margin-top:12px}
+.user-row{display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center;border:1px solid var(--line);border-radius:13px;padding:10px;background:#fbfcfd}
+.user-email{font-weight:800;color:var(--navy);word-break:break-all}.user-meta{font-size:11px;color:var(--muted);margin-top:2px}
+.small-btn{border:0;border-radius:10px;padding:8px 9px;font-weight:800;cursor:pointer;background:var(--soft);color:var(--navy)}
+.small-btn.danger{background:#fff0ee;color:#a12a22}.setup-note{font-size:12px;color:var(--muted);line-height:1.5}
+@media(max-width:600px){.admin-grid{grid-template-columns:1fr}.user-row{grid-template-columns:1fr 1fr}.user-row>div:first-child{grid-column:1/-1}}
+
+</style>
+
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="./config.js"></script>
+
+</head>
+<body>
+<section id="authScreen" class="auth-screen">
+  <div class="auth-box">
+    <div class="auth-logo">🎨</div>
+    <h2>Coloramica + BEHR</h2>
+    <p>Acceso exclusivo para usuarios autorizados.</p>
+    <button id="googleLogin" class="google-btn">Continuar con Google</button>
+    <div id="authMessage" class="auth-msg">Usa la Cuenta de Google autorizada por el administrador.</div>
+    <div class="setup-note" style="margin-top:14px">Desarrollo y administración: Sebastián Reyes Espina<br>Idea original: Sandro Díaz González</div>
+  </div>
+</section>
+<div class="app hidden" id="mainApp">
+<header class="hero">
+  <div class="hero-row"><div class="logo">🎨</div><div><h1>Coloramica + BEHR</h1><p>Ubicación de chips y biblioteca técnica para atención en pinturas</p></div></div>
+  <div class="sessionbar">
+    <div class="who"><span>Sesión activa</span><b id="sessionIdentity">—</b></div>
+    <button id="logoutBtn" class="logout-btn">Cerrar sesión</button>
+  </div>
+</header>
+
+<div class="tabs" id="mainTabs">
+  <button class="tab active" data-tab="chips">🎨 Buscar chip</button>
+  <button class="tab" data-tab="behr">📚 Fichas BEHR</button>
+  <button class="tab hidden" id="adminTab" data-tab="admin">⚙️ Administración</button>
+</div>
+
+<section id="chipsPanel">
+  <div class="card">
+    <label for="chipQ">Código de color</label>
+    <div class="searchrow"><input id="chipQ" autocomplete="off" spellcheck="false" placeholder="Ej.: MQ3-27"><button class="btn primary" id="chipBtn">🔎 Buscar</button></div>
+    <div class="helper">Acepta MQ3-27, mq3-27 o mq327.</div>
+  </div>
+  <div class="section hidden" id="histSec"><p class="title">🕘 Recientes</p><div class="history" id="history"></div></div>
+  <div class="section" id="chipOut"><div class="empty">Ingresa un código para ubicar el chip.</div></div>
+</section>
+
+<section id="behrPanel" class="hidden">
+  <div class="card">
+    <label for="prodQ">Buscar producto o necesidad</label>
+    <div class="filters">
+      <input id="prodQ" autocomplete="off" placeholder="Ej.: 436, anticorrosivo, fibrocemento, piso…">
+      <select id="catFilter"><option value="">Todas las categorías</option></select>
+    </div>
+    <div class="helper">Busca por nombre, número de producto, uso, superficie, acabado o categoría.</div>
+  </div>
+  <div class="catalog-meta"><span id="prodCount"></span><span>Actualizado: 09/09/2026</span></div>
+  <div class="product-list" id="productList"></div>
+  <div class="disclaimer"><b>Importante:</b> los resúmenes sirven como ayuda rápida de venta. Para aplicación, seguridad, preparación de superficie, dilución, rendimiento definitivo y restricciones, se debe revisar la ficha técnica/hoja de seguridad oficial vigente de BEHR y la etiqueta del envase. La disponibilidad y presentación en Easy puede variar por tienda y stock.</div>
+</section>
+
+
+
+<section id="adminPanel" class="hidden">
+  <div class="card">
+    <p class="title">⚙️ Usuarios autorizados</p>
+    <div class="admin-grid">
+      <input id="newUserEmail" type="email" autocomplete="off" placeholder="correo@dominio.com">
+      <select id="newUserRole">
+        <option value="consulta">Consulta</option>
+        <option value="admin">Administrador</option>
+      </select>
+      <button id="saveUserBtn" class="btn primary">Autorizar</button>
+    </div>
+    <div class="helper">Solo un administrador puede agregar, reactivar, desactivar o cambiar permisos.</div>
+    <div id="adminMsg" class="auth-msg hidden"></div>
+    <div id="userList" class="user-list"></div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="card">
+    <p class="title">ℹ️ Acerca de la aplicación</p>
+    <div style="font-size:13px;line-height:1.6;color:#435568">
+      <div><b>Desarrollo y administración del proyecto:</b> Sebastián Reyes Espina</div>
+      <div><b>Crédito por la idea original:</b> Sandro Díaz González</div>
+      <div style="margin-top:8px">© 2026 Sebastián Reyes Espina. Todos los derechos reservados.</div>
+      <div style="margin-top:8px;color:#657587">
+        BEHR® y Easy® son marcas de sus respectivos propietarios. Esta aplicación es una herramienta independiente de apoyo para consulta y gestión de información de pinturas.
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="footer">Desarrollo: Sebastián Reyes Espina · Idea original: Sandro Díaz González<br>Base de chips protegida en Supabase · Biblioteca técnica: 36 familias · Los enlaces oficiales requieren conexión.</div>
+</div>
+
+<script>
+let CHIPS=[];
+const PRODUCTS=[{"name":"BEHR PREMIUM PLUS® Esmalte al Agua Interior Mate","codes":"7050 / 7400 / 7300 / 7012 / 7052","category":"Interior","line":"Premium Plus","use":"Interior","finish":"Mate","coverage":"23–37 m²/gal","dry":"1 h","recoat":"2 h","coats":"2 recomendadas","surfaces":"Muros y cielos interiores correctamente preparados","cleaning":"Agua y jabón","note":"Acabado mate para uso interior. Verificar preparación y primer según sustrato.","url":"https://www.behr.cl/consumer/productos/pintura-interior-primer-sellador/premium-plus-interior/premium-plus-mate-interior"},{"name":"BEHR PREMIUM PLUS® Esmalte al Agua Interior Satinado","codes":"7050 / 7400 / 7300 / 7012 / 7052","category":"Interior","line":"Premium Plus","use":"Interior","finish":"Satinado","coverage":"23–37 m²/gal","dry":"1 h","recoat":"2 h","coats":"2 recomendadas","surfaces":"Muros interiores preparados","cleaning":"Agua y jabón","note":"Mayor lavabilidad y brillo que el acabado mate.","url":"https://www.behr.cl/consumer/productos/pintura-interior-primer-sellador/premium-plus-interior/premium-plus-interior-satin"},{"name":"PREMIUM PLUS® Pintura Interior Esmalte al Agua Semi-Satin","codes":"2050 / 2300 / 2400 / 2012 / 2052","category":"Interior","line":"Premium Plus","use":"Interior","finish":"Semi-Satin","coverage":"23–37 m²/gal","dry":"1 h","recoat":"2 h","coats":"2 recomendadas","surfaces":"Muros, molduras y superficies interiores preparadas","cleaning":"Agua y jabón","note":"Acabado con mayor brillo, útil donde se requiere limpieza frecuente.","url":"https://www.behr.cl/consumer/productos/pintura-interior-primer-sellador/premium-plus-interior/premium-plus-interior-semi-satin"},{"name":"BEHR PREMIUM® Pintura Interior Mate","codes":"G210 / G213","category":"Interior","line":"Premium","use":"Interior","finish":"Mate","coverage":"23–37 m²/gal","dry":"1 h","recoat":"2 h","coats":"Según color/sustrato","surfaces":"Muros y cielos interiores preparados","cleaning":"Agua y jabón","note":"Buena adherencia y cubrimiento de imperfecciones.","url":"https://www.behr.cl/consumer/productos/pintura-interior-primer-sellador/behr-premium/behr-premium-pintura-interior-mate"},{"name":"BEHR PREMIUM® Pintura Interior Satinado","codes":"G230 / G233","category":"Interior","line":"Premium","use":"Interior","finish":"Satinado","coverage":"23–37 m²/gal","dry":"1 h","recoat":"2 h","coats":"Según color/sustrato","surfaces":"Muros interiores preparados","cleaning":"Agua y jabón","note":"Acabado satinado lavable.","url":"https://www.behr.cl/consumer/productos/pintura-interior-primer-sellador/behr-premium/behr-premium-pintura-interior-satinado"},{"name":"PROFESSIONAL ADVANTAGE BY BEHR™ Pintura Mate Interior/Exterior","codes":"G150","category":"Profesional","line":"Professional Advantage","use":"Interior / Exterior","finish":"Mate","coverage":"23–37 m²/gal","dry":"1 h","recoat":"2 h","coats":"Según sustrato","surfaces":"Muros interiores y exteriores preparados","cleaning":"Agua y jabón","note":"Línea profesional de uso interior/exterior.","url":"https://www.behr.cl/consumer/productos/pintura-interior-primer-sellador/professional-advantage/professional-advantage-by-behr-pintura-mate-interior-exterior"},{"name":"PROFESSIONAL ADVANTAGE BY BEHR™ Esmalte al Agua Satinado Interior/Exterior","codes":"G180","category":"Profesional","line":"Professional Advantage","use":"Interior / Exterior","finish":"Satinado","coverage":"23–37 m²/gal","dry":"1 h","recoat":"2 h","coats":"Según sustrato","surfaces":"Muros interiores y exteriores preparados","cleaning":"Agua y jabón","note":"Línea profesional, acabado satinado.","url":"https://www.behr.cl/consumer/productos/pintura-interior-primer-sellador/professional-advantage/professional-advantage-by-behr-pintura-satinado-interior-exterior"},{"name":"BEHR ULTRA® Esmalte Aperlado Interior","codes":"2750 / 2754 / 2753","category":"Interior","line":"Ultra","use":"Interior","finish":"Aperlado","coverage":"40–45 m²/gal","dry":"1 h","recoat":"2 h","coats":"Según color/sustrato","surfaces":"Muros interiores preparados","cleaning":"Agua y jabón","note":"Pintura y sellador con fórmula de bloqueo de manchas.","url":"https://www.behr.cl/consumer/productos/pintura-interior-primer-sellador/behr-ultra/behr-ultra-interior-eggshell-enamel"},{"name":"BEHR PREMIUM PLUS® Primer/Sellador Acrílico Anticorrosivo Interior/Exterior","codes":"436","category":"Primer","line":"Premium Plus","use":"Interior / Exterior","finish":"Primer / Sellador","coverage":"23–37 m²/gal","dry":"30–60 min","recoat":"≈ 1 h","coats":"1 según sustrato","surfaces":"Madera, mampostería, mortero, metal galvanizado, vinilo y aluminio correctamente preparados","cleaning":"Agua y jabón","note":"Primer multipropósito. Confirmar compatibilidad y preparación específica del sustrato.","url":"https://www.behr.cl/consumer/productos/pintura-interior-primer-sellador/primers-selladores-interiores/premium-plus-primer-sellador-para-multiusos-interior-exterior"},{"name":"PREMIUM PLUS® Mate Exterior","codes":"4050 / 4300 / 4400","category":"Exterior","line":"Premium Plus","use":"Exterior","finish":"Mate","coverage":"23–37 m²/gal","dry":"1 h","recoat":"2 h","coats":"2 recomendadas","surfaces":"Muros y revestimientos exteriores preparados","cleaning":"Agua y jabón","note":"100% acrílico; acabado resistente a hongos según información del fabricante.","url":"https://www.behr.cl/consumer/productos/pintura-exterior-primer-sellador/premium-plus-exterior/premium-plus-exterior-mate"},{"name":"PREMIUM PLUS® Exterior Satinado","codes":"9050 / 9340 / 9400","category":"Exterior","line":"Premium Plus","use":"Exterior","finish":"Satinado","coverage":"23–37 m²/gal","dry":"1 h","recoat":"2 h","coats":"2 recomendadas","surfaces":"Muros y superficies exteriores preparadas","cleaning":"Agua y jabón","note":"Acabado satinado exterior.","url":"https://www.behr.cl/consumer/productos/pintura-exterior-primer-sellador/premium-plus-exterior/premium-plus-exterior-satinado"},{"name":"BEHR PREMIUM® Exterior Mate","codes":"G260 / G263","category":"Exterior","line":"Premium","use":"Exterior","finish":"Mate","coverage":"23–37 m²/gal","dry":"1 h","recoat":"2 h","coats":"Según color/sustrato","surfaces":"Muros exteriores preparados","cleaning":"Agua y jabón","note":"Pintura exterior acrílica para superficies adecuadamente preparadas.","url":"https://www.behr.cl/consumer/productos/pintura-exterior-primer-sellador/behr-premium/behr-premium-exterior-mate"},{"name":"BEHR PREMIUM® Exterior Satinado","codes":"G280 / G283","category":"Exterior","line":"Premium","use":"Exterior","finish":"Satinado","coverage":"23–37 m²/gal","dry":"1 h","recoat":"2 h","coats":"Según color/sustrato","surfaces":"Muros exteriores preparados","cleaning":"Agua y jabón","note":"Acabado satinado para exterior.","url":"https://www.behr.cl/consumer/productos/pintura-exterior-primer-sellador/behr-premium/behr-premium-exterior-satinado"},{"name":"BEHR SPECIALTY® Renovador de Superficies DeckOver","codes":"5000","category":"Pisos","line":"Specialty","use":"Exterior","finish":"Microtexturado","coverage":"Consultar ficha oficial","dry":"Consultar ficha","recoat":"4–6 h","coats":"2","surfaces":"Concreto y madera horizontal exterior correctamente preparados","cleaning":"Agua y jabón","note":"Recubrimiento renovador antideslizante/microtexturado. Seguir estrictamente preparación y condiciones de aplicación.","url":"https://www.behr.cl/consumer/productos/sistemas-para-pisos-decorativos/deckover/behr-specialty-deckover"},{"name":"BEHR SPECIALTY™ Pintura Epóxica para Pisos de Concreto","codes":"900 / 930","category":"Pisos","line":"Specialty","use":"Interior / Exterior","finish":"Satinado","coverage":"28–37 m²/gal rugoso · 37–46 m²/gal liso","dry":"1 h","recoat":"4–6 h","coats":"2 según condición","surfaces":"Pisos de concreto y mampostería correctamente preparados","cleaning":"Agua y jabón","note":"No aplicar sobre superficies no compatibles sin revisar TDS.","url":"https://www.behr.cl/consumer/productos/sistemas-para-pisos-decorativos/behr-specialty-pintura-epoxico-para-pisos-de-concreto"},{"name":"BEHR SPECIALTY™ Pintura Esmalte al Agua para Pisos y Patios","codes":"6050","category":"Pisos","line":"Specialty","use":"Interior / Exterior","finish":"Consultar ficha oficial","coverage":"18–28 m²/gal rugoso · 28–38 m²/gal liso","dry":"1 h","recoat":"4–6 h","coats":"Según sustrato","surfaces":"Pisos y patios de concreto/mampostería correctamente preparados","cleaning":"Agua y jabón","note":"Los valores de rendimiento dependen fuertemente de la porosidad y textura.","url":"https://www.behr.cl/consumer/productos/sistemas-para-pisos-decorativos/pintura-para-pisos/behr-specialty-pintura-esmalte-al-agua-para-pisos-y-patios"},{"name":"BEHR SPECIALTY® Antiderrapante Granite Grip™","codes":"650 Gray / 655 Tan","category":"Pisos","line":"Specialty","use":"Interior / Exterior","finish":"Texturado antiderrapante","coverage":"≈ 4–6 m²/gal según textura","dry":"Consultar ficha","recoat":"Consultar ficha","coats":"2","surfaces":"Concreto y mampostería horizontal correctamente preparados","cleaning":"Agua y jabón","note":"Producto de alta textura; el rendimiento es mucho menor que una pintura convencional.","url":"https://www.behr.cl/consumer/productos/sistemas-para-pisos-decorativos/productos-antiderrapantes/behr-specialty-granite-grip"},{"name":"BEHR SPECIALTY™ Sellador Wet-Look","codes":"985","category":"Pisos","line":"Specialty","use":"Interior / Exterior","finish":"Brillante / efecto húmedo","coverage":"23–37 m²/gal","dry":"1 h","recoat":"4 h","coats":"2–4","surfaces":"Concreto y mampostería","cleaning":"Agua y jabón","note":"Sellador transparente de efecto húmedo. Confirmar compatibilidad con superficie previamente recubierta.","url":"https://www.behr.cl/consumer/productos/sistemas-para-pisos-decorativos/selladores-para-pisos/behr-specialty-sellador-wet-look"},{"name":"BEHR® Protector e Impermeabilizante para Concreto y Mampostería","codes":"980","category":"Humedad","line":"Protección","use":"Interior / Exterior","finish":"Transparente / penetrante","coverage":"Consultar ficha oficial","dry":"Consultar ficha","recoat":"Consultar ficha","coats":"Según absorción","surfaces":"Concreto y mampostería porosos","cleaning":"Agua y jabón","note":"No sustituye una solución para filtraciones activas o presión hidrostática sin evaluar el sistema.","url":"https://www.behr.cl/consumer/productos/soluciones-de-humedad/impermeabilizantes-para-muro-y-pisos/behr-protector-and-impermeabilizante"},{"name":"BEHR SPECIALTY® Protector Omnifóbico Transparente","codes":"2481","category":"Humedad","line":"Specialty","use":"Interior / Exterior","finish":"Transparente","coverage":"Madera ≈ 37 m²/gal · concreto ≈ 23 m²/gal","dry":"Consultar ficha","recoat":"Una capa delgada","coats":"1","surfaces":"Múltiples superficies porosas, incluyendo madera y concreto","cleaning":"Agua y jabón","note":"Protector impregnante. No usar donde la ficha técnica lo excluya.","url":"https://www.behr.cl/consumer/productos/soluciones-de-humedad/impermeabilizantes-para-muro-y-pisos/behr-specialty-protector-omnifobico"},{"name":"BEHR® Impermeabilizante para Concreto y Mampostería","codes":"870 Blanco","category":"Humedad","line":"Impermeabilizante","use":"Interior / Exterior","finish":"Película impermeable","coverage":"Consultar ficha oficial","dry":"Consultar ficha","recoat":"Consultar ficha","coats":"Según sistema","surfaces":"Muros de concreto y mampostería, sobre y bajo nivel según ficha","cleaning":"Agua y jabón","note":"No indicado para pisos ni para detener fugas activas. Revisar humedad y preparación antes de aplicar.","url":"https://www.behr.cl/consumer/productos/soluciones-de-humedad/impermeabilizantes-para-muro-y-pisos/behr-impermeabilizante-para-concreto-y-mamposteria"},{"name":"BEHR® Pintura Elastomérica para Mampostería, Mortero y Ladrillo","codes":"68","category":"Humedad","line":"Elastomérico","use":"Exterior","finish":"Elastomérico","coverage":"Consultar ficha oficial","dry":"Consultar ficha","recoat":"Consultar ficha","coats":"2 recomendadas","surfaces":"Mampostería, mortero y ladrillo exteriores correctamente preparados","cleaning":"Agua y jabón","note":"Recubrimiento flexible exterior. No utilizar en pisos.","url":"https://www.behr.cl/consumer/productos/soluciones-de-humedad/impermeabilizantes-para-muro-y-pisos/behr-pintura-elastomerica-para-mamposteria-mortero-y-ladrillo"},{"name":"BEHR SPECIALTY® Barniz Poliuretano de Secado Rápido Base Agua","codes":"8154","category":"Madera","line":"Specialty","use":"Interior","finish":"Transparente","coverage":"≈ 37 m²/gal","dry":"30 min","recoat":"2 h","coats":"2–3","surfaces":"Madera interior correctamente lijada y limpia","cleaning":"Agua y jabón","note":"Barniz base agua para terminación interior en madera.","url":"https://www.behr.cl/consumer/productos/tintas-y-acabados-para-madera/interior/behr-specialty-para-maderas-barniz-poliuretano-de-secado-rapido-base-agua"},{"name":"BEHR SPECIALTY® Tinte + Barniz Poliuretano","codes":"B6301 / B6312 / B6352 / B6354 / B6358 / B6360","category":"Madera","line":"Specialty","use":"Interior","finish":"Tinte + barniz","coverage":"≈ 12 m²/L","dry":"Consultar ficha","recoat":"Consultar ficha","coats":"2 o más","surfaces":"Madera interior","cleaning":"Según ficha oficial","note":"No está diseñado para pisos ni uso exterior.","url":"https://www.behr.cl/consumer/productos/tintas-y-acabados-para-madera/interior/behr-specialty-para-maderas-tinte-barniz-poliuretano"},{"name":"BEHR SPECIALTY® Barniz Marino Uretano Base Agua Interior/Exterior","codes":"B8254","category":"Madera","line":"Specialty","use":"Interior / Exterior","finish":"Transparente","coverage":"Consultar ficha oficial","dry":"30 min","recoat":"2 h","coats":"2–3","surfaces":"Madera interior y exterior correctamente preparada","cleaning":"Agua y jabón","note":"Barniz uretano para madera; revisar exposición y condiciones indicadas por fabricante.","url":"https://www.behr.cl/consumer/productos/tintas-y-acabados-para-madera/interior-exterior/behr-specialty-para-maderas-barniz-marino-uretano-int-ext"},{"name":"BEHR® Tinta/Protector Impermeabilizante para Madera Color Sólido 5 en 1","codes":"211 / 213","category":"Madera","line":"5 en 1","use":"Exterior","finish":"Color sólido","coverage":"≈ 37 m²/gal","dry":"Consultar ficha","recoat":"Consultar ficha","coats":"2 capas delgadas","surfaces":"Madera y algunos compuestos exteriores correctamente preparados","cleaning":"Agua y jabón","note":"Protección exterior con color sólido.","url":"https://www.behr.cl/consumer/productos/tintas-y-acabados-para-madera/exterior/behr-tinta-stain-impermeabilizante-para-madera-color-solido"},{"name":"BEHR® Tinta/Protector Impermeabilizante para Madera Semi-Transparente 5 en 1","codes":"3077","category":"Madera","line":"5 en 1","use":"Exterior","finish":"Semi-transparente","coverage":"Hasta ≈ 56 m²/gal según capa/sustrato","dry":"Consultar ficha","recoat":"1–2 h","coats":"2 capas delgadas","surfaces":"Madera exterior correctamente preparada","cleaning":"Agua y jabón","note":"Curado total puede requerir alrededor de 72 h; revisar TDS antes de tránsito/exposición.","url":"https://www.behr.cl/consumer/productos/tintas-y-acabados-para-madera/exterior/behr-tinta-stain-impermeabilizante-para-madera-semi-transparente"},{"name":"BEHR SPECIALTY™ Óleo Semibrillo Base Agua Interior/Exterior","codes":"3900 / 3930","category":"Especialidad","line":"Specialty","use":"Interior / Exterior","finish":"Semibrillo","coverage":"Consultar ficha oficial","dry":"1 h","recoat":"2 h","coats":"Según sustrato","surfaces":"Metal, madera y mampostería adecuadamente preparados","cleaning":"Agua y jabón","note":"No usar en pisos salvo indicación expresa del fabricante.","url":"https://www.behr.cl/consumer/productos/pintura-especial/oleos/behr-oleos"},{"name":"BEHR™ Látex Interior/Exterior Mate","codes":"G110","category":"Profesional","line":"Látex","use":"Interior / Exterior","finish":"Mate","coverage":"23–37 m²/gal","dry":"1 h","recoat":"2 h","coats":"Según sustrato","surfaces":"Muros interiores y exteriores preparados","cleaning":"Agua y jabón","note":"Látex mate de uso general interior/exterior.","url":"https://www.behr.cl/consumer/productos/pintura-especial/latex/behr-latex-interior-exterior-mate"},{"name":"BEHR SPECIALTY™ Anticorrosivo 4 en 1","codes":"8200 / 8220 / 8230","category":"Especialidad","line":"Specialty","use":"Interior / Exterior","finish":"Satinado","coverage":"23–37 m²/gal aprox.","dry":"1 h","recoat":"Consultar ficha","coats":"2 recomendadas","surfaces":"Metales correctamente preparados","cleaning":"Agua y jabón","note":"Revisar preparación de óxido, adherencia y compatibilidad antes de aplicar.","url":"https://www.behr.cl/consumer/productos/pintura-especial/anticorrosivo/behr-specialty-anticorrosivo-4-en-1"},{"name":"BEHR SPECIALTY™ Esmalte Sintético Interior/Exterior Brillante","codes":"8605","category":"Especialidad","line":"Specialty","use":"Interior / Exterior","finish":"Brillante","coverage":"23–37 m²/gal","dry":"1 h","recoat":"2 h","coats":"Según sustrato","surfaces":"Metal, madera, concreto, yeso, PVC y ladrillo preparados","cleaning":"Consultar ficha oficial","note":"Confirmar dilución/limpieza y primer recomendado según sustrato.","url":"https://www.behr.cl/consumer/productos/pintura-especial/esmaltes-protectors-especiales/behr-specialty-esmalte-sintetico-interior-exterior-brillante"},{"name":"BEHR SPECIALTY™ Esmalte Epóxico Antibacterial de un Componente","codes":"HP140 / HP143","category":"Especialidad","line":"Specialty","use":"Interior","finish":"Epóxico de un componente","coverage":"Consultar ficha oficial","dry":"Consultar ficha","recoat":"Consultar ficha","coats":"Según sistema","surfaces":"Superficies interiores comerciales/institucionales compatibles","cleaning":"Consultar ficha oficial","note":"Alta resistencia; NO es una pintura para pisos. Revisar TDS para sustratos y preparación.","url":"https://www.behr.cl/consumer/productos/pintura-especial/esmaltes-protectors-especiales/behr-specialty-esmalte-epoxico-antibacterial-de-un-componente"},{"name":"BEHR PRO™ Pasta de Muro","codes":"BW15","category":"Especialidad","line":"BEHR PRO","use":"Interior","finish":"Mate blanco / pasta","coverage":"≈ 6–7 m²/gal","dry":"Consultar ficha","recoat":"Lijar/recubrir según ficha","coats":"Según reparación","surfaces":"Concreto, mampostería, drywall y fibrocemento interiores","cleaning":"Agua","note":"Para nivelación/reparación. No usar en pisos.","url":"https://www.behr.cl/consumer/productos/pintura-especial/pastas/behr-pro-pasta-de-muro"},{"name":"BEHR® Multiusos","codes":"BC10","category":"Selladores","line":"Selladores y Adhesivos","use":"Interior / Exterior","finish":"Blanco / pintable","coverage":"≈ 17 m lineales por cartucho","dry":"Pintable en 30 min","recoat":"—","coats":"Cordón continuo","surfaces":"Juntas, molduras, zócalos y marcos compatibles","cleaning":"Agua y jabón","note":"Sellador para juntas. Dimensionar la junta y usar respaldo cuando corresponda.","url":"https://www.behr.cl/consumer/productos/selladores-y-adhesivos/behr-multiusos"},{"name":"BEHR® Exteriores","codes":"BS40","category":"Selladores","line":"Selladores y Adhesivos","use":"Exterior","finish":"Pintable","coverage":"Consultar ficha oficial","dry":"Pintable en 30 min","recoat":"—","coats":"Cordón continuo","surfaces":"Juntas exteriores compatibles","cleaning":"Agua y jabón","note":"No aplicar si se esperan lluvia o congelación dentro de 24 h, según instrucciones del fabricante.","url":"https://www.behr.cl/consumer/productos/selladores-y-adhesivos/behr-exteriores"},{"name":"BEHR® Baños y Cocinas","codes":"BS50","category":"Selladores","line":"Selladores y Adhesivos","use":"Interior","finish":"Blanco / pintable","coverage":"≈ 17 m lineales por cartucho","dry":"Pintable en 30 min","recoat":"—","coats":"Cordón continuo","surfaces":"Marcos, lavaplatos/lavamanos, tinas, cubiertas, cerámica, piedra, granito, mármol, concreto, ladrillo y madera compatibles","cleaning":"Agua y jabón","note":"No usar en inmersión continua ni donde la ficha lo excluya.","url":"https://www.behr.cl/consumer/productos/selladores-y-adhesivos/behr-banos-y-cocinas"}];
+const SAFETY="https://www.behr.cl/consumer/productos/safety-msds";
+const EASY="https://www.easy.cl/search/behr";
+
+const chipIndex=new Map();
+for(const r of CHIPS){if(!chipIndex.has(r.key))chipIndex.set(r.key,[]);chipIndex.get(r.key).push(r)}
+const norm=s=>(s||"").trim().toUpperCase().replace(/[^A-Z0-9]/g,"");
+const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
+
+function showTab(t){
+  document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x.dataset.tab===t));
+  document.getElementById("chipsPanel").classList.toggle("hidden",t!=="chips");
+  document.getElementById("behrPanel").classList.toggle("hidden",t!=="behr");
+  document.getElementById("adminPanel").classList.toggle("hidden",t!=="admin");
+  if(t==="admin") loadUsers();
+}
+document.querySelectorAll(".tab").forEach(b=>b.addEventListener("click",()=>showTab(b.dataset.tab)));
+
+const chipQ=document.getElementById("chipQ"),chipOut=document.getElementById("chipOut");
+function grid(side,hits){
+  const hit=new Set(hits.filter(x=>x.side===side).map(x=>`${x.row}-${x.col}`));
+  let h=`<div class="grid-scroll"><div style="font-weight:850;margin-bottom:6px">📍 Lado ${esc(side)}</div><div class="grid"><div class="gl"></div>`;
+  for(let c=1;c<=24;c++)h+=`<div class="gl">${c}</div>`;
+  for(let r=1;r<=16;r++){h+=`<div class="gl">${r}</div>`;for(let c=1;c<=24;c++)h+=`<div class="cell ${hit.has(`${r}-${c}`)?"hit":""}" title="Fila ${r} · Columna ${c}"></div>`}
+  return h+`</div></div>`;
+}
+function saveHist(code){let h=JSON.parse(localStorage.getItem("coloramica_history")||"[]");h=[code,...h.filter(x=>x!==code)].slice(0,7);localStorage.setItem("coloramica_history",JSON.stringify(h));renderHist()}
+function renderHist(){const h=JSON.parse(localStorage.getItem("coloramica_history")||"[]"),s=document.getElementById("histSec"),e=document.getElementById("history");s.classList.toggle("hidden",!h.length);e.innerHTML=h.map(x=>`<button class="chip" data-code="${esc(x)}">${esc(x)}</button>`).join("");e.querySelectorAll("[data-code]").forEach(b=>b.onclick=()=>{chipQ.value=b.dataset.code;searchChip()})}
+function searchChip(){
+ const raw=chipQ.value,key=norm(raw);if(!key){chipOut.innerHTML=`<div class="empty">Escribe un código antes de buscar.</div>`;return}
+ const rows=chipIndex.get(key);
+ if(!rows){
+   let cand=[];for(const [k,v] of chipIndex){if(k.includes(key)||key.includes(k)){cand.push(v[0]);if(cand.length===8)break}}
+   chipOut.innerHTML=`<div class="result"><div class="bigcode" style="font-size:21px">Código no encontrado</div><p style="color:#657587">${cand.length?"Coincidencias cercanas:":"No existe una coincidencia en la base actual."}</p>${cand.map(r=>`<button class="chip sug" data-code="${esc(r.code)}">${esc(r.code)}</button>`).join(" ")}</div>`;
+   chipOut.querySelectorAll(".sug").forEach(b=>b.onclick=()=>{chipQ.value=b.dataset.code;searchChip()});return
+ }
+ const review=rows.some(r=>r.status.startsWith("REVISAR")),dup=rows.length>1;
+ let h=`<div class="result"><div class="result-head"><div><div class="bigcode">${esc(rows[0].code)}</div><div style="font-size:12px;color:#657587">${dup?rows.length+" ubicaciones encontradas":"Ubicación encontrada"}</div></div><span class="badge ${review?"warn":"ok"}">${review?"REVISAR":"✓ ENCONTRADO"}</span></div>`;
+ if(dup)h+=`<div class="notice">Este código aparece en más de una posición; se muestran todas.</div>`;
+ rows.forEach(r=>h+=`<div class="loc"><strong>${esc(r.side)} · Fila ${r.row} · Columna ${r.col}</strong><small>${esc(r.location)}</small></div>`);
+ [...new Set(rows.map(r=>r.side))].forEach(s=>h+=grid(s,rows));
+ h+=`<div class="actions"><button class="btn secondary" id="copyLoc">📋 Copiar ubicación</button><button class="btn secondary" id="clearChip">✕ Limpiar</button></div></div>`;
+ chipOut.innerHTML=h;
+ document.getElementById("copyLoc").onclick=async()=>{const txt=`${rows[0].code}: `+rows.map(r=>`${r.side}, fila ${r.row}, columna ${r.col}`).join(" | ");try{await navigator.clipboard.writeText(txt);document.getElementById("copyLoc").textContent="✓ Copiado"}catch(e){alert(txt)}};
+ document.getElementById("clearChip").onclick=()=>{chipQ.value="";chipOut.innerHTML=`<div class="empty">Ingresa un código para ubicar el chip.</div>`;chipQ.focus()};
+ saveHist(rows[0].code);
+}
+document.getElementById("chipBtn").onclick=searchChip;chipQ.onkeydown=e=>{if(e.key==="Enter")searchChip()};chipQ.oninput=()=>chipQ.value=chipQ.value.toUpperCase();renderHist();
+
+const categories=[...new Set(PRODUCTS.map(p=>p.category))].sort();
+document.getElementById("catFilter").innerHTML+=categories.map(c=>`<option>${esc(c)}</option>`).join("");
+const prodQ=document.getElementById("prodQ"),catFilter=document.getElementById("catFilter"),productList=document.getElementById("productList");
+function productText(p){return [p.name,p.codes,p.category,p.line,p.use,p.finish,p.coverage,p.surfaces,p.note].join(" ").toLowerCase()}
+function renderProducts(){
+ const q=prodQ.value.trim().toLowerCase(),cat=catFilter.value;
+ const arr=PRODUCTS.filter(p=>(!cat||p.category===cat)&&(!q||productText(p).includes(q)));
+ document.getElementById("prodCount").textContent=`${arr.length} de ${PRODUCTS.length} familias`;
+ if(!arr.length){productList.innerHTML=`<div class="empty">No encontré productos con esos filtros.</div>`;return}
+ productList.innerHTML=arr.map((p,i)=>`<article class="product">
+   <div class="product-top"><div><div class="pname">${esc(p.name)}</div><div class="codes">N.º / bases: <b>${esc(p.codes)}</b> · Línea: ${esc(p.line)}</div></div><span class="cat">${esc(p.category)}</span></div>
+   <div class="facts">
+     <div class="fact"><b>USO</b><span>${esc(p.use)}</span></div>
+     <div class="fact"><b>ACABADO</b><span>${esc(p.finish)}</span></div>
+     <div class="fact"><b>RENDIMIENTO</b><span>${esc(p.coverage)}</span></div>
+     <div class="fact"><b>SECADO</b><span>${esc(p.dry)}</span></div>
+     <div class="fact"><b>REPINTADO</b><span>${esc(p.recoat)}</span></div>
+     <div class="fact"><b>CAPAS</b><span>${esc(p.coats)}</span></div>
+   </div>
+   <div class="details"><b>Superficies:</b> ${esc(p.surfaces)}<br><b>Limpieza:</b> ${esc(p.cleaning)}<br><b>Nota rápida:</b> ${esc(p.note)}</div>
+   <div class="linkrow">
+     <a class="link" href="${esc(p.url)}" target="_blank" rel="noopener">📄 Producto / ficha BEHR</a>
+     <a class="link alt" href="${SAFETY}" target="_blank" rel="noopener">🧪 TDS / SDS oficial</a>
+     <a class="link alt" href="${EASY}" target="_blank" rel="noopener">🛒 Buscar en Easy</a>
+   </div>
+ </article>`).join("");
+}
+prodQ.oninput=renderProducts;catFilter.onchange=renderProducts;renderProducts();
+</script>
+
+
+<script>
+let sbClient = null;
+let currentAccess = null;
+
+function authMessage(text, isError=false){
+  const el=document.getElementById("authMessage");
+  el.textContent=text;
+  el.classList.toggle("error",isError);
+}
+function adminMessage(text, isError=false){
+  const el=document.getElementById("adminMsg");
+  el.textContent=text;
+  el.classList.remove("hidden");
+  el.classList.toggle("error",isError);
+  setTimeout(()=>el.classList.add("hidden"),3000);
+}
+function configReady(){
+  const c=window.COLORAMICA_CONFIG||{};
+  return c.supabaseUrl && c.supabaseAnonKey &&
+    !c.supabaseUrl.includes("TU-PROYECTO") &&
+    !c.supabaseAnonKey.includes("TU-CLAVE");
+}
+async function signInGoogle(){
+  if(!configReady()){
+    authMessage("La autenticación todavía necesita conectar el proyecto Supabase. Revisa CONFIGURAR_ACCESO.txt.",true);
+    return;
+  }
+  const redirectTo = window.location.origin + window.location.pathname;
+  const {error}=await sbClient.auth.signInWithOAuth({provider:"google",options:{redirectTo}});
+  if(error) authMessage("No se pudo iniciar sesión: "+error.message,true);
+}
+async function validateSession(){
+  if(!configReady()){
+    authMessage("PWA preparada para acceso seguro. Falta conectar Supabase y Google antes de publicarla.",true);
+    return;
+  }
+  const {data:{session}}=await sbClient.auth.getSession();
+  if(!session){ return; }
+  await authorizeUser(session.user);
+}
+async function loadColorLocations(){
+  const {data,error}=await sbClient.from("color_locations")
+    .select("id,original_code,code,search_key,side,row_no,col_no,location,status")
+    .order("id");
+  if(error) throw error;
+  CHIPS=(data||[]).map(r=>({
+    id:r.id, original:r.original_code, code:r.code, key:r.search_key,
+    side:r.side, row:r.row_no, col:r.col_no, location:r.location, status:r.status
+  }));
+}
+
+async function authorizeUser(user){
+  const email=(user.email||"").toLowerCase();
+  const {data,error}=await sbClient.from("app_users")
+    .select("email,full_name,role,active")
+    .eq("email",email).maybeSingle();
+
+  if(error){
+    authMessage("No fue posible verificar tu autorización. "+error.message,true);
+    return;
+  }
+  if(!data || !data.active){
+    await sbClient.auth.signOut();
+    document.getElementById("mainApp").classList.add("hidden");
+    document.getElementById("authScreen").classList.remove("hidden");
+    authMessage("Esta Cuenta de Google no está autorizada para ingresar a Coloramica + BEHR.",true);
+    return;
+  }
+
+  currentAccess=data;
+  try {
+    await loadColorLocations();
+  } catch(e) {
+    authMessage("Tu acceso fue validado, pero no pude cargar la base de chips. "+e.message,true);
+    return;
+  }
+  document.getElementById("sessionIdentity").textContent =
+    `${data.full_name || user.user_metadata?.full_name || email} · ${data.role==="admin"?"Administrador":"Consulta"}`;
+  document.getElementById("adminTab").classList.toggle("hidden",data.role!=="admin");
+  document.getElementById("authScreen").classList.add("hidden");
+  document.getElementById("mainApp").classList.remove("hidden");
+  showTab("chips");
+}
+async function logout(){
+  if(sbClient) await sbClient.auth.signOut();
+  currentAccess=null;
+  document.getElementById("mainApp").classList.add("hidden");
+  document.getElementById("authScreen").classList.remove("hidden");
+  authMessage("Sesión cerrada. Usa una Cuenta de Google autorizada.");
+}
+async function loadUsers(){
+  if(!currentAccess || currentAccess.role!=="admin") return;
+  const el=document.getElementById("userList");
+  el.innerHTML='<div class="helper">Cargando usuarios…</div>';
+  const {data,error}=await sbClient.from("app_users")
+    .select("email,full_name,role,active,created_at")
+    .order("email");
+  if(error){ el.innerHTML='<div class="notice">No se pudo cargar la lista.</div>'; return; }
+  el.innerHTML=(data||[]).map(u=>`<div class="user-row">
+    <div><div class="user-email">${esc(u.email)}</div>
+      <div class="user-meta">${esc(u.full_name||"Sin nombre")} · ${u.role==="admin"?"Administrador":"Consulta"} · ${u.active?"Activo":"Desactivado"}</div>
+    </div>
+    <button class="small-btn roleBtn" data-email="${esc(u.email)}" data-role="${u.role}">${u.role==="admin"?"Pasar a consulta":"Hacer admin"}</button>
+    <button class="small-btn ${u.active?"danger":""} activeBtn" data-email="${esc(u.email)}" data-active="${u.active}">${u.active?"Desactivar":"Reactivar"}</button>
+  </div>`).join("") || '<div class="empty">No hay usuarios registrados.</div>';
+
+  el.querySelectorAll(".roleBtn").forEach(b=>b.onclick=async()=>{
+    const role=b.dataset.role==="admin"?"consulta":"admin";
+    const {error}=await sbClient.from("app_users").update({role}).eq("email",b.dataset.email);
+    if(error) adminMessage(error.message,true); else {adminMessage("Permiso actualizado.");loadUsers();}
+  });
+  el.querySelectorAll(".activeBtn").forEach(b=>b.onclick=async()=>{
+    const active=b.dataset.active!=="true";
+    const {error}=await sbClient.from("app_users").update({active}).eq("email",b.dataset.email);
+    if(error) adminMessage(error.message,true); else {adminMessage(active?"Usuario reactivado.":"Usuario desactivado.");loadUsers();}
+  });
+}
+async function saveUser(){
+  if(!currentAccess || currentAccess.role!=="admin") return;
+  const email=document.getElementById("newUserEmail").value.trim().toLowerCase();
+  const role=document.getElementById("newUserRole").value;
+  if(!email || !email.includes("@")){adminMessage("Ingresa un correo válido.",true);return}
+  const {error}=await sbClient.from("app_users").upsert({email,role,active:true},{onConflict:"email"});
+  if(error) adminMessage(error.message,true);
+  else{
+    document.getElementById("newUserEmail").value="";
+    adminMessage("Usuario autorizado.");
+    loadUsers();
+  }
+}
+
+document.getElementById("googleLogin").addEventListener("click",signInGoogle);
+document.getElementById("logoutBtn").addEventListener("click",logout);
+document.getElementById("saveUserBtn").addEventListener("click",saveUser);
+
+if(configReady()){
+  sbClient=supabase.createClient(
+    window.COLORAMICA_CONFIG.supabaseUrl,
+    window.COLORAMICA_CONFIG.supabaseAnonKey,
+    {auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}}
+  );
+  sbClient.auth.onAuthStateChange((event,session)=>{
+    if(session?.user) setTimeout(()=>authorizeUser(session.user),0);
+  });
+}
+validateSession();
+</script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./service-worker.js')
+      .catch(err => console.error('Service Worker:', err));
+  });
+}
+</script>
+
+</body>
+</html>
