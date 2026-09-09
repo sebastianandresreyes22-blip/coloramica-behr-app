@@ -289,6 +289,14 @@ async function loadColorLocations(){
     id:r.id, original:r.original_code, code:r.code, key:r.search_key,
     side:r.side, row:r.row_no, col:r.col_no, location:r.location, status:r.status
   }));
+
+  // Reconstruir el índice de búsqueda después de cargar los chips desde Supabase.
+  // Antes se creaba cuando CHIPS aún estaba vacío, por eso ningún código aparecía.
+  chipIndex.clear();
+  for(const r of CHIPS){
+    if(!chipIndex.has(r.key)) chipIndex.set(r.key,[]);
+    chipIndex.get(r.key).push(r);
+  }
 }
 
 async function authorizeUser(user){

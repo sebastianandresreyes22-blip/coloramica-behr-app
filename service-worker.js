@@ -1,4 +1,4 @@
-const CACHE_NAME = 'coloramica-behr-v2-auth';
+const CACHE_NAME = 'coloramica-behr-v3-chip-index-fix';
 const APP_SHELL = [
   './',
   './index.html',
